@@ -6,7 +6,8 @@
   "supportFile": "./src/support/index.ts",
   "pluginsFile": false,
   "video": true,
-  "videosFolder": "../../dist/cypress/apps/arenda-app-e2e/videos",
-  "screenshotsFolder": "../../dist/cypress/apps/arenda-app-e2e/screenshots",
-  "chromeWebSecurity": false
+  "videosFolder": "../../dist/cypress/apps/ui-e2e/videos",
+  "screenshotsFolder": "../../dist/cypress/apps/ui-e2e/screenshots",
+  "chromeWebSecurity": false,
+  "baseUrl": "http://localhost:4400"
 }

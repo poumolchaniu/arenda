@@ -1,11 +1,37 @@
 {
   "version": 1,
   "projects": {
+    "api-interfaces": {
+      "projectType": "library",
+      "root": "libs/api-interfaces",
+      "sourceRoot": "libs/api-interfaces/src",
+      "prefix": "orca",
+      "architect": {
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/api-interfaces"],
+          "options": {
+            "jestConfig": "libs/api-interfaces/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/api-interfaces/src/**/*.ts",
+              "libs/api-interfaces/src/**/*.html"
+            ]
+          }
+        }
+      },
+      "tags": []
+    },
     "arenda-app": {
       "projectType": "application",
       "root": "apps/arenda-app",
       "sourceRoot": "apps/arenda-app/src",
-      "prefix": "arenda",
+      "prefix": "orca",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -19,18 +45,19 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "apps/arenda-app/src/favicon.ico",
-              "apps/arenda-app/src/assets"
+              "apps/arenda-app/src/assets",
+              "apps/arenda-app/src/web.config"
             ],
             "styles": ["apps/arenda-app/src/styles.scss"],
-            "scripts": []
+            "scripts": ["./node_modules/chart.js/dist/Chart.js"]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "5mb",
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -59,6 +86,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "port": 4233
+          },
           "configurations": {
             "production": {
               "browserTarget": "arenda-app:build:production"
@@ -95,20 +125,74 @@
       },
       "tags": []
     },
-    "arenda-app-e2e": {
-      "root": "apps/arenda-app-e2e",
-      "sourceRoot": "apps/arenda-app-e2e/src",
+    "ui": {
+      "projectType": "library",
+      "root": "libs/ui",
+      "sourceRoot": "libs/ui/src",
+      "prefix": "orca",
+      "architect": {
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/ui"],
+          "options": {
+            "jestConfig": "libs/ui/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/ui/src/**/*.ts", "libs/ui/src/**/*.html"]
+          }
+        },
+        "storybook": {
+          "builder": "@nrwl/storybook:storybook",
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "port": 4400,
+            "config": {
+              "configFolder": "libs/ui/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        },
+        "build-storybook": {
+          "builder": "@nrwl/storybook:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "uiFramework": "@storybook/angular",
+            "outputPath": "dist/storybook/ui",
+            "config": {
+              "configFolder": "libs/ui/.storybook"
+            }
+          },
+          "configurations": {
+            "ci": {
+              "quiet": true
+            }
+          }
+        }
+      },
+      "tags": []
+    },
+    "ui-e2e": {
+      "root": "apps/ui-e2e",
+      "sourceRoot": "apps/ui-e2e/src",
       "projectType": "application",
       "architect": {
         "e2e": {
           "builder": "@nrwl/cypress:cypress",
           "options": {
-            "cypressConfig": "apps/arenda-app-e2e/cypress.json",
-            "devServerTarget": "arenda-app:serve:development"
+            "cypressConfig": "apps/ui-e2e/cypress.json",
+            "devServerTarget": "ui:storybook"
           },
           "configurations": {
-            "production": {
-              "devServerTarget": "arenda-app:serve:production"
+            "ci": {
+              "devServerTarget": "ui:storybook:ci"
             }
           }
         },
@@ -116,12 +200,12 @@
           "builder": "@nrwl/linter:eslint",
           "outputs": ["{options.outputFile}"],
           "options": {
-            "lintFilePatterns": ["apps/arenda-app-e2e/**/*.{js,ts}"]
+            "lintFilePatterns": ["apps/ui-e2e/**/*.{js,ts}"]
           }
         }
       },
       "tags": [],
-      "implicitDependencies": ["arenda-app"]
+      "implicitDependencies": ["ui"]
     }
   }
 }
